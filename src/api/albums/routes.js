@@ -5,19 +5,9 @@ const routes = (handler) => [
     handler: handler.postAlbumHandler,
   },
   {
-    method: 'POST',
-    path: '/songs',
-    handler: handler.postSongHandler,
-  },
-  {
     method: 'GET',
     path: '/albums',
     handler: handler.getAlbumsHandler,
-  },
-  {
-    method: 'GET',
-    path: '/songs',
-    handler: handler.getSongsHandler,
   },
   {
     method: 'GET',
@@ -25,19 +15,9 @@ const routes = (handler) => [
     handler: handler.getAlbumByIdHandler,
   },
   {
-    method: 'GET',
-    path: '/songs/{id}',
-    handler: handler.getSongByIdHandler,
-  },
-  {
     method: 'PUT',
     path: '/albums/{id}',
     handler: handler.putAlbumByIdHandler,
-  },
-  {
-    method: 'PUT',
-    path: '/songs/{id}',
-    handler: handler.putSongByIdHandler,
   },
   {
     method: 'DELETE',
@@ -45,9 +25,30 @@ const routes = (handler) => [
     handler: handler.deleteAlbumByIdHandler,
   },
   {
-    method: 'DELETE',
-    path: '/songs/{id}',
-    handler: handler.deleteSongByIdHandler,
+    method: 'POST',
+    path: '/albums/{id}/likes',
+    handler: handler.postLikeToAlbumHandler,
+    options: {
+      auth: 'openmusicapp_jwt',
+    },
+  },
+  {
+    method: 'GET',
+    path: '/albums/{id}/likes',
+    handler: handler.getLikesFromAlbumHandler,
+  },
+  {
+    method: 'POST',
+    path: '/albums/{id}/covers',
+    handler: handler.postCoverAlbumHandler,
+    options: {
+      payload: {
+        maxBytes: 512000,
+        allow: 'multipart/form-data',
+        multipart: true,
+        output: 'stream',
+      },
+    },
   },
 ];
 

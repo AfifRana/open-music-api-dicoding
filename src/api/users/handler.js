@@ -1,4 +1,4 @@
-const ClientError = require("../../exceptions/ClientError");
+const ClientError = require('../../exceptions/ClientError');
 
 class UsersHandler {
   constructor(service, validator) {
@@ -9,13 +9,13 @@ class UsersHandler {
     this.getUserByIdHandler = this.getUserByIdHandler.bind(this);
     this.getUsersByUsernameHandler = this.getUsersByUsernameHandler.bind(this);
   }
-  
+
   async postUserHandler(request, h) {
     try {
       this._validator.validateUserPayload(request.payload);
-      const {username, password, fullname} = request.payload;
+      const { username, password, fullname } = request.payload;
 
-      const userId = await this._service.addUser({username, password, fullname});
+      const userId = await this._service.addUser({ username, password, fullname });
 
       const response = h.response({
         status: 'success',
@@ -26,9 +26,8 @@ class UsersHandler {
       });
       response.code(201);
       return response;
-
     } catch (error) {
-      if(error instanceof ClientError) {
+      if (error instanceof ClientError) {
         const response = h.response({
           status: 'fail',
           message: error.message,
@@ -50,7 +49,7 @@ class UsersHandler {
 
   async getUserByIdHandler(request, h) {
     try {
-      const {id} = request.params;
+      const { id } = request.params;
       const user = await this._service.getUserById(id);
 
       return {
@@ -60,7 +59,7 @@ class UsersHandler {
         },
       };
     } catch (error) {
-      if(error instanceof ClientError) {
+      if (error instanceof ClientError) {
         const response = h.response({
           status: 'fail',
           message: error.message,
@@ -82,7 +81,7 @@ class UsersHandler {
 
   async getUsersByUsernameHandler(request, h) {
     try {
-      const {username = ''} = request.query;
+      const { username = '' } = request.query;
       const users = await this._service.getUsersByUsername(username);
 
       return {
@@ -92,7 +91,7 @@ class UsersHandler {
         },
       };
     } catch (error) {
-      if(error instanceof ClientError) {
+      if (error instanceof ClientError) {
         const response = h.response({
           status: 'fail',
           message: error.message,

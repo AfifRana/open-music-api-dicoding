@@ -40,7 +40,7 @@ class PlaylistsService {
 
     const playlists = [];
 
-    for (const row of resultPlaylists.rows) {
+    await Promise.all(resultPlaylists.rows.map(async (row) => {
       const queryUsername = {
         text: 'SELECT username FROM users WHERE id = $1',
         values: [row.owner],
@@ -52,7 +52,7 @@ class PlaylistsService {
       const { id, name } = row;
 
       playlists.push({ id, name, username });
-    }
+    }));
 
     return playlists;
   }
@@ -108,7 +108,7 @@ class PlaylistsService {
 
     const playlistSongs = await this._pool.query(queryPlaylistSongs);
 
-    for (const row of playlistSongs.rows) {
+    await Promise.all(playlistSongs.rows.map(async (row) => {
       const querySongs = {
         text: 'SELECT id, title, performer FROM songs WHERE id = $1',
         values: [row.song_id],
@@ -116,7 +116,7 @@ class PlaylistsService {
 
       const result = await this._pool.query(querySongs);
       songs.push(result.rows[0]);
-    }
+    }));
 
     const { id, name } = playlist.rows[0];
     const { username } = resultUsername.rows[0];
@@ -198,7 +198,7 @@ class PlaylistsService {
 
     const activities = [];
 
-    for (const row of resultActivity.rows) {
+    await Promise.all(resultActivity.rows.map(async (row) => {
       const queryUsername = {
         text: 'SELECT username FROM users WHERE id = $1',
         values: [row.user_id],
@@ -220,7 +220,7 @@ class PlaylistsService {
       activities.push({
         username, title, action, time,
       });
-    }
+    }));
 
     return activities;
   }

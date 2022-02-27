@@ -4,26 +4,9 @@ const InvariantError = require('../../exceptions/InvariantError');
 const { mapGetSongsDB, mapGetSongDB } = require('../../utils');
 const NotFoundError = require('../../exceptions/NotFoundError');
 
-class OpenMusicService {
+class SongsService {
   constructor() {
     this._pool = new Pool();
-  }
-
-  async addAlbum({ name, year }) {
-    const id = `album-${nanoid(16)}`;
-
-    const query = {
-      text: 'INSERT INTO albums VALUES($1, $2, $3) RETURNING id',
-      values: [id, name, year],
-    };
-
-    const result = await this._pool.query(query);
-
-    if (!result.rows[0].id) {
-      throw new InvariantError('Album gagal ditambahkan');
-    }
-
-    return result.rows[0].id;
   }
 
   async addSong({
@@ -45,41 +28,10 @@ class OpenMusicService {
     return result.rows[0].id;
   }
 
-  async getAlbums() {
-    const result = await this._pool.query('SELECT * FROM albums');
+  async getSongs() {
+    const result = await this._pool.query('SELECT id, title, performer FROM songs');
 
     return result.rows;
-  }
-
-  async getSongs() {
-    const result = await this._pool.query('SELECT * FROM songs');
-
-    return result.rows.map(mapGetSongsDB);
-  }
-
-  async getAlbumById(id) {
-    const queryAlbum = {
-      text: 'SELECT * FROM albums WHERE id = $1',
-      values: [id],
-    };
-    const album = await this._pool.query(queryAlbum);
-
-    if (!album.rows.length) {
-      throw new NotFoundError('Album tidak ditemukan');
-    }
-
-    const querySongs = {
-      text: 'SELECT * FROM songs WHERE album_id = $1',
-      values: [id],
-    };
-    const songs = (await this._pool.query(querySongs)).rows;
-
-    const { name, year } = album.rows[0];
-    const composedAlbum = {
-      id, name, year, songs,
-    };
-
-    return composedAlbum;
   }
 
   async getSongById(id) {
@@ -97,10 +49,9 @@ class OpenMusicService {
   }
 
   async getSongsByTitle(title) {
-    title = `%${title}%`;
     const query = {
       text: 'SELECT * FROM songs WHERE title ILIKE $1',
-      values: [title],
+      values: [`%${title}%`],
     };
     const result = await this._pool.query(query);
 
@@ -112,10 +63,9 @@ class OpenMusicService {
   }
 
   async getSongsByPerformer(performer) {
-    performer = `%${performer}%`;
     const query = {
       text: 'SELECT * FROM songs WHERE performer ILIKE $1',
-      values: [performer],
+      values: [`%${performer}%`],
     };
     const result = await this._pool.query(query);
 
@@ -124,19 +74,6 @@ class OpenMusicService {
     }
 
     return result.rows.map(mapGetSongsDB);
-  }
-
-  async editAlbumById(id, { name, year }) {
-    const query = {
-      text: 'UPDATE albums SET name = $1, year = $2 WHERE id = $3 RETURNING id',
-      values: [name, year, id],
-    };
-
-    const result = await this._pool.query(query);
-
-    if (!result.rows.length) {
-      throw new NotFoundError('Gagal memperbaharui album. Id tidak ditemukan');
-    }
   }
 
   async editSongById(id, {
@@ -154,19 +91,6 @@ class OpenMusicService {
     }
   }
 
-  async deleteAlbumById(id) {
-    const query = {
-      text: 'DELETE FROM albums WHERE id = $1 RETURNING id',
-      values: [id],
-    };
-
-    const result = await this._pool.query(query);
-
-    if (!result.rows.length) {
-      throw new NotFoundError('Album gagal dihapus. Id tidak ditemukan');
-    }
-  }
-
   async deleteSongById(id) {
     const query = {
       text: 'DELETE FROM songs WHERE id = $1 RETURNING id',
@@ -181,4 +105,4 @@ class OpenMusicService {
   }
 }
 
-module.exports = OpenMusicService;
+module.exports = SongsService;

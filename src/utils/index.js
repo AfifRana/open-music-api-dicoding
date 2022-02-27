@@ -1,17 +1,19 @@
-const mapDBToModel = ({
-  id, title, body, tags, created_at, updated_at,
-}) => ({
-  id, title, body, tags, createdAt: created_at, updatedAt: updated_at,
+/* eslint-disable camelcase */
+
+const mapDBToModel = ({ created_at, updated_at, ...args }) => ({
+  ...args,
+  createdAt: created_at,
+  updatedAt: updated_at,
 });
 
 const mapGetSongs = ({
-  id, title, year, genre, performer, duration, albumId,
+  id, title, performer,
 }) => ({
   id, title, performer,
 });
 
 const mapGetSongsDB = ({
-  id, title, year, genre, performer, duration, album_id,
+  id, title, performer,
 }) => ({
   id, title, performer,
 });
