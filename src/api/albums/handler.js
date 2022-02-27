@@ -257,7 +257,7 @@ class AlbumsHandler {
       this._uploadsValidator.validateImageHeaders(cover.hapi.headers);
 
       const filename = await this._storageService.writeFile(cover, cover.hapi);
-      const fileLocation = `http://${process.env.HOST}:${process.env.PORT}/api/albums/file/images/${filename}`;
+      const fileLocation = `http://${process.env.HOST}:${process.env.PORT}/upload/images/${filename}`;
 
       // Simpan alamat cover ke db. Timpah jika sudah ada
       await this._albumsService.editCoverAlbum(albumId, fileLocation);
